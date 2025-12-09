@@ -307,14 +307,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 <div class="card mt-3">
   <div class="card-header fw-semibold">CMS</div>
   <div class="card-body">
-    @php
-      try {
-        $___b = DB::selectOne("SELECT title, body FROM cms_pages where slug='unsafe' LIMIT 1");
-        echo $___b ? $___b->body : '<div class="text-muted">блок не найден</div>';
-      } catch (\Throwable $e) {
-        echo '<div class="text-danger">ошибка БД: '.e($e->getMessage()).'</div>';
-      }
-    @endphp
+    @if(isset($cmsBlock) && $cmsBlock)
+      {{ $cmsBlock->body }}
+    @else
+      <div class="text-muted">блок не найден</div>
+    @endif
   </div>
 </div>
 

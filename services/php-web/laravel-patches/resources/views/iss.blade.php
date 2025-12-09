@@ -20,7 +20,6 @@
           @else
             <div class="text-muted">нет данных</div>
           @endif
-          <div class="mt-3"><code>{{ $base }}/last</code></div>
         </div>
       </div>
     </div>
@@ -39,7 +38,6 @@
           @else
             <div class="text-muted">нет данных</div>
           @endif
-          <div class="mt-3"><code>{{ $base }}/iss/trend</code></div>
           <div class="mt-3"><a class="btn btn-outline-primary" href="/osdr">Перейти к OSDR</a></div>
         </div>
       </div>

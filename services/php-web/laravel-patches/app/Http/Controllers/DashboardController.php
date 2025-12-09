@@ -22,6 +22,9 @@ class DashboardController extends Controller
         $iss   = $this->getJson($b.'/last');
         $trend = []; // фронт сам заберёт /api/iss/trend (через nginx прокси)
 
+        // Получаем CMS-блок через CmsController
+        $cmsBlock = \App\Http\Controllers\CmsController::getBlock('unsafe');
+
         return view('dashboard', [
             'iss' => $iss,
             'trend' => $trend,
@@ -35,6 +38,7 @@ class DashboardController extends Controller
                 'iss_alt'   => $iss['payload']['altitude'] ?? null,
                 'neo_total' => 0,
             ],
+            'cmsBlock' => $cmsBlock,
         ]);
     }
 
