@@ -8,18 +8,31 @@ class OsdrController extends Controller
 {
     public function index(Request $request)
     {
-        $limit = $request->query('limit', '20'); // учебная нестрогая валидация
+        $limit = max(1, min(100, (int)$request->query('limit', 20))); // валидация: от 1 до 100
+        $page = max(1, (int)$request->query('page', 1)); // текущая страница
         $base  = getenv('RUST_BASE') ?: 'http://rust_iss:3000';
 
-        $json  = @file_get_contents($base.'/osdr/list?limit='.$limit);
+        // Получаем больше данных для пагинации (или все, если API поддерживает)
+        $totalLimit = $limit * $page; // получаем достаточно данных для текущей страницы
+        $json  = @file_get_contents($base.'/osdr/list?limit='.$totalLimit);
         $data  = $json ? json_decode($json, true) : ['items' => []];
         $items = $data['items'] ?? [];
 
-        $items = $this->flattenOsdr($items); // ключевая строка
+        $items = $this->flattenOsdr($items); // разворачиваем данные
+        
+        // Пагинация на стороне PHP (если API не поддерживает offset)
+        $totalItems = count($items);
+        $offset = ($page - 1) * $limit;
+        $items = array_slice($items, $offset, $limit);
+        $totalPages = max(1, (int)ceil($totalItems / $limit)); // минимум 1 страница
 
         return view('osdr', [
             'items' => $items,
-            'src'   => $base.'/osdr/list?limit='.$limit,
+            'src'   => $base.'/osdr/list?limit='.$totalLimit,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'limit' => $limit,
+            'totalItems' => $totalItems,
         ]);
     }
 

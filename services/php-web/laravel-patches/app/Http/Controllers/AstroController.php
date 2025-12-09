@@ -22,7 +22,7 @@ class AstroController extends Controller
         }
 
         $auth = base64_encode($appId . ':' . $secret);
-        $url  = 'https://api.astronomyapi.com/api/v2/bodies/events?' . http_build_query([
+        $url = 'https://api.astronomyapi.com/api/v2/bodies/events?' . http_build_query([
             'latitude'  => $lat,
             'longitude' => $lon,
             'from'      => $from,

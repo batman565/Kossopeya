@@ -19,9 +19,9 @@
         </tr>
       </thead>
       <tbody>
-      @forelse($items as $row)
+      @forelse($items as $index => $row)
         <tr>
-          <td>{{ $row['id'] }}</td>
+          <td>{{ ($currentPage - 1) * $limit + $index + 1 }}</td>
           <td>{{ $row['dataset_id'] ?? '—' }}</td>
           <td style="max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
             {{ $row['title'] ?? '—' }}
@@ -48,5 +48,55 @@
       </tbody>
     </table>
   </div>
+
+  {{-- Пагинация --}}
+  @if($totalPages > 1)
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+        {{-- Предыдущая страница --}}
+        <li class="page-item {{ $currentPage <= 1 ? 'disabled' : '' }}">
+          <a class="page-link" href="?page={{ $currentPage - 1 }}&limit={{ $limit }}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+
+        {{-- Номера страниц --}}
+        @php
+          $startPage = max(1, $currentPage - 2);
+          $endPage = min($totalPages, $currentPage + 2);
+        @endphp
+
+        @if($startPage > 1)
+          <li class="page-item"><a class="page-link" href="?page=1&limit={{ $limit }}">1</a></li>
+          @if($startPage > 2)
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+          @endif
+        @endif
+
+        @foreach(range($startPage, $endPage) as $i)
+          <li class="page-item {{ $i == $currentPage ? 'active' : '' }}">
+            <a class="page-link" href="?page={{ $i }}&limit={{ $limit }}">{{ $i }}</a>
+          </li>
+        @endforeach
+
+        @if($endPage < $totalPages)
+          @if($endPage < $totalPages - 1)
+            <li class="page-item disabled"><span class="page-link">...</span></li>
+          @endif
+          <li class="page-item"><a class="page-link" href="?page={{ $totalPages }}&limit={{ $limit }}">{{ $totalPages }}</a></li>
+        @endif
+
+        {{-- Следующая страница --}}
+        <li class="page-item {{ $currentPage >= $totalPages ? 'disabled' : '' }}">
+          <a class="page-link" href="?page={{ $currentPage + 1 }}&limit={{ $limit }}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <div class="text-center text-muted small mt-2">
+      Страница {{ $currentPage }} из {{ $totalPages }} (всего записей: {{ $totalItems }})
+    </div>
+  @endif
 </div>
 @endsection
